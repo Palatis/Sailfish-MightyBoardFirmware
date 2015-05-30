@@ -10,3 +10,4 @@ NOTES.TXT
 *.log
 *.sh~
 DarwinObj/*.pyc
+*.pyc

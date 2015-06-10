@@ -34,6 +34,15 @@
 #define THE_REPLICATOR_STR "Creator X / Pro"
 #define MACHINE_ID 0xD314 // Replicator 1
 
+#elif PALAPRINTER
+
+# ifndef CORE_XY
+#  define THE_REPLICATOR_STR "PalaPrinter"
+# else
+#  define THE_REPLICATOR_STR "PalaPrinter-XY"
+# endif
+# define MACHINE_ID 0xD314 // Replicator 1
+
 #elif WANHAO_DUP4
 
 #define THE_REPLICATOR_STR "Wanhao Duplicatr"
@@ -67,7 +76,7 @@
 #undef TOOLHEAD_OFFSET_X
 #endif
 
-#if defined(FF_CREATOR) || defined(FF_CREATOR_X)
+#if defined(FF_CREATOR) || defined(FF_CREATOR_X) || defined(PALAPRINTER)
 #define TOOLHEAD_OFFSET_X 34.0
 #elif defined(MODEL_REPLICATOR2)
 #define TOOLHEAD_OFFSET_X 35.0

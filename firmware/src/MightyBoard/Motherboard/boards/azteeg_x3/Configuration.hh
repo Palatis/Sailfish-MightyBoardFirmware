@@ -155,7 +155,7 @@
 #define PSTOP2_MSK	PCMSK2
 #define PSTOP2_PCINT	PCINT18
 #define PSTOP2_PCIE	PCIE2
-#define PSTOP2_VECT	PCINT18_vect
+#define PSTOP2_VECT	PCINT2_vect
 
 #define Z_STEPPER_STEP		STEPPER_PORT(L,3)	//active rising edge
 #define Z_STEPPER_DIR		STEPPER_PORT(L,1)	//forward on high
@@ -331,12 +331,12 @@
 // We use the extra two extruder/fan outputs on the expansion board for these.
 // First, the firmware doesn't support more than two extruders.  Second, they're
 // nice screw down terminals and easy to use.
-#define EXA_FAN			Pin(PortH,0)	// OC4B
-#define EXB_FAN			Pin(PortH,1)	// OC3B
+#define EXA_FAN			Pin(PortH,0)	// OC4B / D17 / HOT-END 3 / FAN
+#define EXB_FAN			Pin(PortH,1)	// OC3B / D16 / HOT-END 4 / FAN
 
 // Print cooling fan
 #define ACTIVE_COOLING_FAN
-#define EX_FAN			Pin(PortG,5)	// OC0B
+#define EX_FAN			Pin(PortG,5)	// OC0B / D4
 #define EXTRA_FET		EX_FAN
 
 // Rep 1: wait 0.5 seconds, then handle Extruder 1

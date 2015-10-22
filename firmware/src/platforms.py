@@ -217,26 +217,6 @@ platforms = {
                         'EEPROM_MENU_ENABLE' ]
         },
 
-    'palaprinter' :
-        { 'mcu' : 'atmega2560',
-          'programmer' : 'stk500v2',
-          'board_directory' : 'mighty_one',
-          'defines' : [ 'BUILD_STATS', 'ALTERNATE_UART', 'PALAPRINTER',
-                        'HEATERS_ON_STEROIDS', 'AUTO_LEVEL',
-                        'PSTOP_ZMIN_LEVEL', 'HAS_RGB_LED', 'RGB_LED_MENU',
-                        'EEPROM_MENU_ENABLE' ]
-        },
-
-    'palaprinter-corexy' :
-        { 'mcu' : 'atmega2560',
-          'programmer' : 'stk500v2',
-          'board_directory' : 'mighty_one',
-          'defines' : [ 'BUILD_STATS', 'ALTERNATE_UART', 'PALAPRINTER',
-                        'HEATERS_ON_STEROIDS', 'AUTO_LEVEL',
-                        'PSTOP_ZMIN_LEVEL', 'HAS_RGB_LED', 'RGB_LED_MENU',
-                        'EEPROM_MENU_ENABLE', 'CORE_XY' ]
-        },
-
     'wanhao_dup4' :
         { 'mcu' : 'atmega1280',
           'programmer' : 'stk500v1',

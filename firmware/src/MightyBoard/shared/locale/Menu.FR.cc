@@ -141,7 +141,10 @@ const PROGMEM prog_uchar RETURN_TO_MAIN_MSG[]      = "Main Menu";
 const PROGMEM prog_uchar PRINT_ANOTHER_MSG[]       = "Print Another Copy";
 const PROGMEM prog_uchar CANNOT_PRINT_ANOTHER_MSG[]= "(Cannot Print Copy)";
 
-#if defined(HAS_RGB_LED) && defined(RGB_LED_MENU)
+#if defined(HAS_RGB_LED)
+const PROGMEM prog_uchar LIGHTS_OFF_MSG[]   = "Set Lights OFF";
+const PROGMEM prog_uchar LIGHTS_ON_MSG[]    = "Set Lights ON";
+#if defined(RGB_LED_MENU)
 const PROGMEM prog_uchar LED_MSG[]          = "Eclairage";
 const PROGMEM prog_uchar RED_COLOR_MSG[]    = "ROUGE ";
 const PROGMEM prog_uchar ORANGE_COLOR_MSG[] = "ORANGE";
@@ -152,6 +155,7 @@ const PROGMEM prog_uchar PURPLE_COLOR_MSG[] = "VIOLET";
 const PROGMEM prog_uchar WHITE_COLOR_MSG[]  = "BLANC ";
 const PROGMEM prog_uchar CUSTOM_COLOR_MSG[] = "AUTRE ";
 const PROGMEM prog_uchar OFF_COLOR_MSG[]    = "OFF   ";
+#endif
 #endif
 
 const PROGMEM prog_uchar ERROR_MSG[] =   "erreur";
@@ -207,8 +211,8 @@ const PROGMEM prog_uchar PROFILE_DISPLAY_CONFIG_MSG[]	= "Display Config";
 const PROGMEM prog_uchar PROFILE_CHANGE_NAME_MSG[]	= "Change Name";
 const PROGMEM prog_uchar PROFILE_SAVE_TO_PROFILE_MSG[]	= "Save To Profile";
 const PROGMEM prog_uchar PROFILE_PROFILE_NAME_MSG[]	= "Profile Name:";
-const PROGMEM prog_uchar UPDNLRM_MSG[]			= "Up/Dn/R/L/M to Set";
-const PROGMEM prog_uchar UPDNLM_MSG[]			= "Up/Dn/Left/M to Set";
+const PROGMEM prog_uchar UPDNLRM_MSG[]			= "Up/Dn/R/L/M to set";
+const PROGMEM prog_uchar UPDNLM_MSG[]			= "Up/Dn/Left/M to set";
 const PROGMEM prog_uchar XYZOFFSET_MSG[]                 = " Offset:";  // needs extra space
 const PROGMEM prog_uchar XYZTOOLHEAD_MSG[]              = " Toolhead Offset:"; // needs extra space
 const PROGMEM prog_uchar TOOLHEAD_OFFSETS_MSG[]         = "Toolhead Offsets";
@@ -297,6 +301,8 @@ const PROGMEM prog_uchar COOLING_FAN_PWM_MSG[] = "Cooling Fan Power";
 #endif
 
 #if BOARD_TYPE == BOARD_TYPE_AZTEEG_X3
-const PROGMEM prog_uchar RIGHT_THERMISTOR_MSG[]    = "Right thermistr";
-const PROGMEM prog_uchar LEFT_THERMISTOR_MSG[]     = "Left thermistor";
+const PROGMEM prog_uchar CHOOSE_EXT0_THERM_MSG[] = "Tool 0 temp sensor"; 
+const PROGMEM prog_uchar CHOOSE_EXT1_THERM_MSG[] = "Tool 1 temp sensor"; 
+const PROGMEM prog_uchar CHOOSE_HBP_THERM_MSG[]  = "Bed temp sensor";
+const PROGMEM prog_uchar CHOOSE_THERM_MSG[]      = "Temp Sensor Types";
 #endif

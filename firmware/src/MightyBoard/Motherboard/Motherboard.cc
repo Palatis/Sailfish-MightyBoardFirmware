@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#include "Compat.hh"
 #include <stdint.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -195,7 +196,7 @@ Motherboard::Motherboard() :
 // Azteeg X3
 //   Unfortunately, the extruder heaters are on the Timer 2 outputs
 //	2 = ( 8) Extruders (PWM)
-//	1 = (16)
+//	1 = (16) RGB timer
 //	0 = ( 8) Extruder/Advance timer
 //	3 = (16) Stepper
 //	4 = (16) Buzzer
@@ -549,7 +550,8 @@ void Motherboard::HeatingAlerts() {
 				heating_lights_active = true;
 			}
 #ifdef HAS_RGB_LED
-			RGB_LED::setColor((255*abs((setTemp - deltaTemp)))/div_temp, 0, (255*deltaTemp)/div_temp, false);
+			SET_COLOR((255*abs((setTemp - deltaTemp)))/div_temp, 0,
+				  (255*deltaTemp)/div_temp, false);
 #endif
 		}
 	}
@@ -707,7 +709,7 @@ void Motherboard::runMotherboardSlice() {
 			startButtonWait();
 #ifdef HAS_RGB_LED
 			// turn LEDs blue
-			RGB_LED::setColor(0,0,255, true);
+			RGB_LED::setColor(0, 0, 255);
 #endif
 		}
 		// set tempertures to 0

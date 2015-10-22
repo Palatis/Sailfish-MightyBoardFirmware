@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#include "Compat.hh"
 #include "Command.hh"
 #include "Steppers.hh"
 #include "Commands.hh"
@@ -1032,7 +1033,7 @@ void handlePauseState(void) {
 			heatersOff();
 		    if ( coldPause ) {
 #ifdef HAS_RGB_LED
-			    RGB_LED::setColor(0, 0, 0, true);
+			    RGB_LED::setColor(0, 0, 0);
 #endif
 			    steppers::enableAxes(0xf8, false);
 		    }
@@ -1266,7 +1267,7 @@ void runCommandSlice() {
 	    coldPause = true;
 	    heatersOff();
 #ifdef HAS_RGB_LED
-	    RGB_LED::setColor(0, 0, 0, true);
+	    RGB_LED::setColor(0, 0, 0);
 #endif
 	    steppers::enableAxes(0xf8, false);
 	    return;
@@ -1421,7 +1422,8 @@ void runCommandSlice() {
 			    (command != HOST_CMD_FIND_AXES_MINIMUM) &&
 			    (command != HOST_CMD_FIND_AXES_MAXIMUM) &&
 			    (command != HOST_CMD_TOOL_COMMAND) &&
-			    (command != HOST_CMD_PAUSE_FOR_BUTTON )) {
+			    (command != HOST_CMD_PAUSE_FOR_BUTTON) &&
+				(command != HOST_CMD_SET_BUILD_PERCENT)) {
        	                         if ( ! st_empty() )     return;
        	                 }
 

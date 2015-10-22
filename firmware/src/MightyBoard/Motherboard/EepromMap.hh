@@ -39,6 +39,26 @@ enum LEDColors {
     LED_DEFAULT_CUSTOM
 };
 
+
+#if BOARD_TYPE == BOARD_TYPE_AZTEEG_X3
+
+#include "TemperatureTable.hh"
+
+// For the Azteeg we default these to OFF since the bot may or may
+// not have RGB LEDs installed.  And, running the software PWM needed
+// is a waste of CPU cycles (at interrupt level) for something not
+// present.
+
+#define LED_DEFAULT_COLOR      LED_DEFAULT_OFF
+#define LED_DEFAULT_HEAT_COLOR LED_DEFAULT_RED
+
+#else
+
+#define LED_DEFAULT_COLOR      LED_DEFAULT_WHITE
+#define LED_DEFAULT_HEAT_COLOR LED_DEFAULT_RED
+
+#endif
+
 #define ALEVEL_MAX_ZDELTA_DEFAULT 200 // 200 steps = 0.5 mm
 #define ALEVEL_MAX_ZDELTA_CALIBRATED 60 // 60 steps = 0.15 mm
 
@@ -103,33 +123,47 @@ const static uint16_t D_TERM_OFFSET = 4;
 namespace replicator_axis_offsets{
 #if 0
 	const static uint32_t DUAL_X_OFFSET_MM = 152L;
-        const static uint32_t SINGLE_X_OFFSET_MM = 152L;
+	const static uint32_t SINGLE_X_OFFSET_MM = 152L;
 	const static uint32_t DUAL_Y_OFFSET_MM = 75L;
 	const static uint32_t SINGLE_Y_OFFSET_MM = 72L;
 #endif
 #ifdef ZYYX_3D_PRINTER
-        const static uint32_t DUAL_X_OFFSET_STEPS   = 11957L; // 135*88.573186;
-        const static uint32_t SINGLE_X_OFFSET_STEPS = 11957L; // 135*88.573186;
-        const static uint32_t DUAL_Y_OFFSET_STEPS   = 10186L; // 115*88.573186;
-        const static uint32_t SINGLE_Y_OFFSET_STEPS = 10186L; // 115*88.573186;
+	const static uint32_t DUAL_X_OFFSET_STEPS   = 11957L; // 135*88.573186;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 11957L; // 135*88.573186;
+	const static uint32_t DUAL_Y_OFFSET_STEPS   = 10186L; // 115*88.573186;
+	const static uint32_t SINGLE_Y_OFFSET_STEPS = 10186L; // 115*88.573186;
+#elif BOARD_TYPE == BOARD_TYPE_AZTEEG_X3
+#ifndef XY_MIN_HOMING
+	// Use Rep 1 defaults
+	const static uint32_t DUAL_X_OFFSET_STEPS   = 14309L;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 14309L;
+	const static uint32_t DUAL_Y_OFFSET_STEPS   =  7060L;
+	const static uint32_t SINGLE_Y_OFFSET_STEPS =  6778L;
+#else
+	// Use (0, 0) for the default home position when homing XY-min
+	const static uint32_t DUAL_X_OFFSET_STEPS   = 0L;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 0L;
+	const static uint32_t DUAL_Y_OFFSET_STEPS   = 0L;
+	const static uint32_t SINGLE_Y_OFFSET_STEPS = 0L;
+#endif
 #elif CLONE_R1
-        const static uint32_t DUAL_X_OFFSET_STEPS   = 14444L; // 162.5*88.8889;
-        const static uint32_t SINGLE_X_OFFSET_STEPS = 14444L; // 162.5*88.8889;
-        const static uint32_t DUAL_Y_OFFSET_STEPS   =  8667L; //  97.5*88.8889;
-        const static uint32_t SINGLE_Y_OFFSET_STEPS =  8667L; //  97.5*88.8889;
+	const static uint32_t DUAL_X_OFFSET_STEPS   = 14444L; // 162.5*88.8889;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 14444L; // 162.5*88.8889;
+	const static uint32_t DUAL_Y_OFFSET_STEPS   =  8667L; //  97.5*88.8889;
+	const static uint32_t SINGLE_Y_OFFSET_STEPS =  8667L; //  97.5*88.8889;
 #elif MODEL_REPLICATOR2
 	const static uint32_t DUAL_X_OFFSET_STEPS   = 13463L;
-        const static uint32_t SINGLE_X_OFFSET_STEPS = 13463L;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 13463L;
 	const static uint32_t DUAL_Y_OFFSET_STEPS   =  6643L;
 	const static uint32_t SINGLE_Y_OFFSET_STEPS =  6377L;
 #elif WANHAO_DUP4
-        const static uint32_t DUAL_X_OFFSET_STEPS   = 13763L; // 146.2 mm
-        const static uint32_t SINGLE_X_OFFSET_STEPS = 13763L;
-        const static uint32_t DUAL_Y_OFFSET_STEPS   =  6919L; //  73.5 mm
+	const static uint32_t DUAL_X_OFFSET_STEPS   = 13763L; // 146.2 mm
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 13763L;
+	const static uint32_t DUAL_Y_OFFSET_STEPS   =  6919L; //  73.5 mm
 	const static uint32_t SINGLE_Y_OFFSET_STEPS =  6919L;
 #else
 	const static uint32_t DUAL_X_OFFSET_STEPS   = 14309L;
-        const static uint32_t SINGLE_X_OFFSET_STEPS = 14309L;
+	const static uint32_t SINGLE_X_OFFSET_STEPS = 14309L;
 	const static uint32_t DUAL_Y_OFFSET_STEPS   =  7060L;
 	const static uint32_t SINGLE_Y_OFFSET_STEPS =  6778L;
 #endif
@@ -320,10 +354,6 @@ const static uint16_t COMMIT_VERSION			= 0x004A;
 //$type:B $constraints:l,0,1 $tooltip:Check or set to 1 if this machine has a heated build platform; otherwise, uncheck or set to 0 if it does not.  The bot should be power cycled after changing this field.
 const static uint16_t HBP_PRESENT			= 0x004C;
 /// 40 bytes padding
-/// Thermistor table 0: 128 bytes
-//$BEGIN_ENTRY
-//$eeprom_map:therm_eeprom_offsets $ignore:True
-const static uint16_t THERM_TABLE				= 0x0074;
 /// Padding: 8 bytes
 // Toolhead 0 data: 28 bytes (see above)
 //$BEGIN_ENTRY
@@ -411,21 +441,28 @@ const static uint16_t HEATER_CALIBRATION = 0x020A;
 //$type:B $constraints:l,0,1 $tooltip:When set, the firmware will deprime the extruder on detected travel moves as well as on pauses, planned or otherwise.  When not set, the firmware will only deprime the extruder on pauses, planned or otherwise.  Unplanned pauses occur when the acceleration planner falls behind and the printer waits briefly for another segment to print.
 const static uint16_t EXTRUDER_DEPRIME_ON_TRAVEL        = 0x020B;
 
-/// start of free space
 const static uint16_t FREE_EEPROM_STARTS        = 0x020C;
 
 //Sailfish specific settings work backwards from the end of the eeprom 0xFFF
 
-//Azteeg X3 temp sensor types
-//Bitmap with 0 == thermistor, 1 == Type K thermocouple
-//  bit 0 -- Tool 0
-//  bit 1 -- Tool 1
-//  bit 2 -- HBP (always 0)
-//$BEGIN_ENTRY
-//$type:B $constraints:l,0,3
 #if BOARD_TYPE == BOARD_TYPE_AZTEEG_X3
-const static uint16_t TEMP_SENSOR_TYPES                 = 0x0F47;
-#define DEFAULT_TEMP_SENSOR_TYPES 0x00
+
+// Azteeg X3 thermistor table indices
+// [0] - tool 0
+// [1] - tool 1
+// [2] - hbp
+//$BEGIN_ENTRY
+//$type:BBB
+const static uint16_t TEMP_TABLE_INDICES = 0x0F45;
+
+#ifdef THERM_INDEX_EPCOS
+#define DEFAULT_THERM_TABLE_EXT THERM_INDEX_EPCOS
+#define DEFAULT_THERM_TABLE_HBP THERM_INDEX_EPCOS
+#else
+#define DEFAULT_THERM_TABLE_EXT TABLE_EXT_THERMISTOR
+#define DEFAULT_THERM_TABLE_HBP TABLE_HBP_THERMISTOR
+#endif
+
 #endif
 
 //P-Stop enable (1 byte)
@@ -684,23 +721,6 @@ const static uint16_t CUSTOM_COLOR_OFFSET 	= 0x04;
 }
 
 
-/** thermal EERROM offset values and on/off settings for each heater */
-namespace therm_eeprom_offsets{
-//$BEGIN_ENTRY
-//$type:i $constraints:a
-const static uint16_t THERM_R0_OFFSET                   = 0x00;
-//$BEGIN_ENTRY
-//$type:i $constraints:a
-const static uint16_t THERM_T0_OFFSET                   = 0x04;
-//$BEGIN_ENTRY
-//$type:i $constraints:a
-const static uint16_t THERM_BETA_OFFSET                 = 0x08;
-/// this is legacy storage for alternate thermistor tables
-//$BEGIN_ENTRY
-//$type:B $mult:40 $ignore:True $constraints:a
-const static uint16_t THERM_DATA_OFFSET                 = 0x10;
-}
-
 /** preheat EERROM offset values and on/off settings for each heater */
 namespace preheat_eeprom_offsets{
 //$BEGIN_ENTRY
@@ -810,6 +830,10 @@ namespace eeprom {
     void fullResetEEPROM();
     void setToolHeadCount(uint8_t count);
     void setCustomColor(uint8_t red, uint8_t green, uint8_t blue);
+#ifdef HAS_RGB_LED
+	uint8_t getColor();
+	void setColor(uint8_t color);
+#endif
     bool isSingleTool();
     bool hasHBP();
     void setDefaultsAcceleration();
@@ -818,6 +842,15 @@ namespace eeprom {
     void setDefaultsProfiles(uint16_t eeprom_base);
     void getBuildTime(uint16_t *hours, uint8_t *minutes);
     void setBuildTime(uint16_t hours, uint8_t minutes);
+#ifdef HAS_RGB_LED
     bool heatLights();
+#endif
+
+#if BOARD_TYPE == BOARD_TYPE_AZTEEG_X3
+    uint8_t getThermistorTable(uint8_t idx);
+    void setThermistorTable(uint8_t idx, uint8_t index);
+#endif
+
 }
+
 #endif // EEPROMMAP_HH

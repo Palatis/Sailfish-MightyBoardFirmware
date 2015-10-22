@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#include "Compat.hh"
 #include "Main.hh"
 #include "Host.hh"
 #include "Command.hh"
@@ -141,7 +142,6 @@ void reset(bool hard_reset) {
 		steppers::reset();
 		DEBUG_VALUE(DEBUG_MAIN | 0x0B);
 
-//		initThermistorTables();
 		board.reset(hard_reset);
 		DEBUG_VALUE(DEBUG_MAIN | 0x0C);
 

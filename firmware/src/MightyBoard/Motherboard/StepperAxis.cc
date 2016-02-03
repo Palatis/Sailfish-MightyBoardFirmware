@@ -86,6 +86,11 @@ volatile int16_t e_steps[EXTRUDERS];
 volatile uint8_t axesEnabled;			//Planner axis enabled
 volatile uint8_t axesHardwareEnabled;		//Hardware axis enabled
 
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+int8_t corexy_direction_x = 0;
+int8_t corexy_direction_y = 0;
+#endif
+
 /// Initialize a stepper axis
 void stepperAxisInit(bool hard_reset) {
 	uint8_t axes_invert = 0, endstops_invert = 0;

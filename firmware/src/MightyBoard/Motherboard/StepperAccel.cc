@@ -318,6 +318,11 @@ FORCE_INLINE void setup_next_block() {
 	     if ( out_bits & (1 << X_AXIS) ) xsteps = -xsteps;
 	     if ( out_bits & (1 << Y_AXIS) ) ysteps = -ysteps;
 
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+	     corexy_direction_x = (xsteps > 0) ? 1 : (xsteps < 0) ? -1: 0;
+	     corexy_direction_y = (ysteps > 0) ? 1 : (ysteps < 0) ? -1: 0;
+#endif
+
 	     asteps = xsteps + ysteps;
 	     bsteps = xsteps - ysteps;
 
@@ -455,8 +460,13 @@ bool st_interrupt() {
 
 			if ( oversampledCount < (1 << OVERSAMPLED_DDA) ) {
 				//Step the dda for each axis
-				stepperAxis_dda_step(X_AXIS);
-				stepperAxis_dda_step(Y_AXIS);
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+				if (stepperAxis_corexy_check_endstops())
+#endif
+				{
+					stepperAxis_dda_step(X_AXIS);
+					stepperAxis_dda_step(Y_AXIS);
+				}
 				stepperAxis_dda_step(Z_AXIS);
 				stepperAxis_dda_step(A_AXIS);
 				stepperAxis_dda_step(B_AXIS);
@@ -529,8 +539,13 @@ bool st_interrupt() {
 			#endif
 
 			//Step the dda for each axis
-			stepperAxis_dda_step(X_AXIS);
-			stepperAxis_dda_step(Y_AXIS);
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+			if (stepperAxis_corexy_check_endstops())
+#endif
+			{
+				stepperAxis_dda_step(X_AXIS);
+				stepperAxis_dda_step(Y_AXIS);
+			}
 			stepperAxis_dda_step(Z_AXIS);
 			stepperAxis_dda_step(A_AXIS);
 			stepperAxis_dda_step(B_AXIS);

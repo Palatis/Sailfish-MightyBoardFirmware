@@ -145,7 +145,17 @@ extern volatile int16_t e_steps[EXTRUDERS];
 extern volatile bool    axis_homing[STEPPER_COUNT];
 extern volatile uint8_t axesEnabled;			//Planner axis enabled
 extern volatile uint8_t axesHardwareEnabled;		//Hardware axis enabled
-
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+// volatile shouldn't be neccessary, we write these only
+// during setup_next_block(), which is inside st_interrupt(),
+// and only read during st_interrupt(), and st_interrupt()
+// is un-interruptable.
+// these 2 variables are not intended to be shared amount any
+// other part of the code.
+// however, correct me if I'm wrong.
+extern int8_t corexy_direction_x;
+extern int8_t corexy_direction_y;
+#endif
 
 /// Set the direction of the next step
 FORCE_INLINE void stepperAxisSetDirection(uint8_t axis, bool forward) {
@@ -196,9 +206,32 @@ FORCE_INLINE bool stepperAxisIsAtMinimum(uint8_t axis) {
 	return (STEPPER_IOPORT_NULL(stepperAxisPorts[axis].minimum)) ? false : (STEPPER_IOPORT_READ(stepperAxisPorts[axis].minimum) ^ stepperAxis[axis].invert_endstop);
 }
 
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+FORCE_INLINE bool stepperAxis_corexy_check_endstops() {
+	if (( corexy_direction_x > 0 && stepperAxisIsAtMaximum(X_AXIS)) ||
+	    ( corexy_direction_x < 0 && stepperAxisIsAtMinimum(X_AXIS))) {
+		axis_homing[X_AXIS] = false;
+		return false;
+	}
+	if (( corexy_direction_y > 0 && stepperAxisIsAtMaximum(Y_AXIS)) ||
+	    ( corexy_direction_y < 0 && stepperAxisIsAtMinimum(Y_AXIS))) {
+		axis_homing[Y_AXIS] = false;
+		return false;
+	}
+	return true;
+}
+#endif
+
 /// Makes a step, but checks if an endstop is triggered first, if it is, the
 /// step is abandoned and "true" is returned.
 FORCE_INLINE bool stepperAxisStepWithEndstopCheck(uint8_t axis, bool direction) {
+#if defined(CORE_XY_HONOR_ENDSTOPS)
+	// just step, we check this somewhere else.
+	if (axis < Z_AXIS) {
+		stepperAxisStep(axis, true);
+		return true;
+	}
+#endif
 	if (( (direction)   && (! stepperAxisIsAtMaximum(axis))) ||
 	    ( (! direction) && (! stepperAxisIsAtMinimum(axis)))) {
 		stepperAxisStep(axis, true);
@@ -302,10 +335,11 @@ FORCE_INLINE void stepperAxis_dda_step(uint8_t ind)
 			stepperAxisSetDirection(ind, DDA_IND.stepperDir );
 			if ( stepperAxisStepWithEndstopCheck(ind,
 #if !defined(CORE_XY) && !defined(CORE_XY_STEPPER)
-							     DDA_IND.stepperDir) )
+							     DDA_IND.stepperDir
 #else
-							     DDA_IND.positiveDir) )
+							     DDA_IND.positiveDir
 #endif
+				) )
 				dda_position[ind] += DDA_IND.direction;
 			stepperAxisStep(ind, false);
 #ifdef JKN_ADVANCE
